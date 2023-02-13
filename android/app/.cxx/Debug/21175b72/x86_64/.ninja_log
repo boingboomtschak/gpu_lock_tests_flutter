@@ -1,0 +1,10 @@
+# ninja log v5
+0	721	1676310901	CMakeFiles/easyvk.dir/vk_backend/easyvk.cpp.o	3d772ce16e08fd3d
+0	1201	1676310901	CMakeFiles/gpulock.dir/vk_backend/vk_lock_test.cpp.o	8b34c0652bbb61a0
+1201	1311	1676310901	/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/build/app/intermediates/cxx/Debug/21175b72/obj/x86_64/libgpulock.so	66e51a2a3ccbfa97
+1	1307	1676311042	CMakeFiles/gpulock.dir/vk_backend/vk_lock_test.cpp.o	8b34c0652bbb61a0
+1307	1428	1676311042	/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/build/app/intermediates/cxx/Debug/21175b72/obj/x86_64/libgpulock.so	66e51a2a3ccbfa97
+2	1237	1676311092	CMakeFiles/gpulock.dir/vk_backend/vk_lock_test.cpp.o	8b34c0652bbb61a0
+1237	1354	1676311092	/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/build/app/intermediates/cxx/Debug/21175b72/obj/x86_64/libgpulock.so	66e51a2a3ccbfa97
+1	1243	1676311204	CMakeFiles/gpulock.dir/vk_backend/vk_lock_test.cpp.o	8b34c0652bbb61a0
+1243	1364	1676311204	/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/build/app/intermediates/cxx/Debug/21175b72/obj/x86_64/libgpulock.so	66e51a2a3ccbfa97

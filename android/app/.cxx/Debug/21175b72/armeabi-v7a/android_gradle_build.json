@@ -1,0 +1,43 @@
+{
+  "buildFiles": [
+    "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/dmckee/Library/Android/sdk/cmake/3.18.1/bin/ninja",
+      "-C",
+      "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/dmckee/Library/Android/sdk/cmake/3.18.1/bin/ninja",
+    "-C",
+    "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "easyvk::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "easyvk"
+    },
+    "gpulock::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "gpulock",
+      "output": "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/build/app/intermediates/cxx/Debug/21175b72/obj/armeabi-v7a/libgpulock.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

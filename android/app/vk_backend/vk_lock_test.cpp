@@ -61,17 +61,17 @@ void log(const char* fmt, ...) {
     va_end(args);
 }
 
-extern "C" char* run(
-    uint32_t workgroups = 16,
-    uint32_t lock_iters = 1000,
-    uint32_t test_iters = 16
-) {
+extern "C" char* run() {
     log("Initializing test...\n");
 
     Instance instance = Instance(false);
     Device device = instance.devices().at(0);
 
     log("Using device '%s'\n", device.properties.deviceName);
+
+    uint32_t workgroups = 8;
+    uint32_t lock_iters = 2000;
+    uint32_t test_iters = 16;
 
     uint32_t maxComputeWorkGroupInvocations = device.properties.limits.maxComputeWorkGroupInvocations;
     log("MaxComputeWorkGroupInvocations: %d\n", maxComputeWorkGroupInvocations);

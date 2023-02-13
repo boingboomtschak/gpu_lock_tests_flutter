@@ -1,0 +1,7 @@
+Executable : /Users/dmckee/Library/Android/sdk/cmake/3.18.1/bin/ninja
+arguments : 
+-C
+/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/x86
+gpulock
+jvmArgs : 
+

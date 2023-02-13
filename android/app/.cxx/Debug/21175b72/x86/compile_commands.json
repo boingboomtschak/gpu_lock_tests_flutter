@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/x86",
+  "command": "/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=i686-none-linux-android26 --gcc-toolchain=/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dgpulock_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -o CMakeFiles/gpulock.dir/vk_backend/vk_lock_test.cpp.o -c /Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/vk_backend/vk_lock_test.cpp",
+  "file": "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/vk_backend/vk_lock_test.cpp"
+},
+{
+  "directory": "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/x86",
+  "command": "/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=i686-none-linux-android26 --gcc-toolchain=/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/dmckee/Library/Android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -o CMakeFiles/easyvk.dir/vk_backend/easyvk.cpp.o -c /Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/vk_backend/easyvk.cpp",
+  "file": "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/vk_backend/easyvk.cpp"
+}
+]

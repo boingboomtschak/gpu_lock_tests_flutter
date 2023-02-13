@@ -1,0 +1,68 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "gpu_lock_tests",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "easyvk::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-easyvk-Debug-70fce8e9803e2b22f84a.json",
+					"name" : "easyvk",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "gpulock::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gpulock-Debug-6f0024e5946d54863910.json",
+					"name" : "gpulock",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/x86_64",
+		"source" : "/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 1
+	}
+}
