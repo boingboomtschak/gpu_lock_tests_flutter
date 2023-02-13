@@ -1,2 +1,0 @@
-ninja: Entering directory `/Users/dmckee/Documents/Development/hetarc/gpu_lock_tests_flutter/android/app/.cxx/Debug/21175b72/x86'
-ninja: no work to do.
