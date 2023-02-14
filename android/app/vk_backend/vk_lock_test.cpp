@@ -61,17 +61,13 @@ void log(const char* fmt, ...) {
     va_end(args);
 }
 
-extern "C" char* run() {
+extern "C" char* run(uint32_t workgroups, uint32_t lock_iters, uint32_t test_iters) {
     log("Initializing test...\n");
 
     Instance instance = Instance(false);
     Device device = instance.devices().at(0);
 
     log("Using device '%s'\n", device.properties.deviceName);
-
-    uint32_t workgroups = 8;
-    uint32_t lock_iters = 2000;
-    uint32_t test_iters = 16;
 
     uint32_t maxComputeWorkGroupInvocations = device.properties.limits.maxComputeWorkGroupInvocations;
     log("MaxComputeWorkGroupInvocations: %d\n", maxComputeWorkGroupInvocations);
@@ -112,13 +108,18 @@ extern "C" char* run() {
         uint32_t test_failures = (lock_iters * workgroups) - result;
         float test_percent = (float)test_failures / (float)test_total * 100;
 
+        #ifndef __ANDROID__
         if (test_percent > 10.0)
             log("\u001b[31m");
         else if (test_percent > 5.0)
             log("\u001b[33m");
         else
             log("\u001b[32m");
-        log("%d / %d, %.2f%%\u001b[0m\n", test_failures, test_total, test_percent);
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
         tas_failures += test_failures;
     }
     float tas_failure_percent = (float)tas_failures / (float)total_locks * 100;
@@ -149,13 +150,18 @@ extern "C" char* run() {
         uint32_t test_failures = (lock_iters * workgroups) - result;
         float test_percent = (float)test_failures / (float)test_total * 100;
 
+        #ifndef __ANDROID__
         if (test_percent > 10.0)
             log("\u001b[31m");
         else if (test_percent > 5.0)
             log("\u001b[33m");
         else
             log("\u001b[32m");
-        log("%d / %d, %.2f%%\u001b[0m\n", test_failures, test_total, test_percent);
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
         ttas_failures += test_failures;
     }
     float ttas_failure_percent = (float)ttas_failures / (float)total_locks * 100;
@@ -186,13 +192,18 @@ extern "C" char* run() {
         uint32_t test_failures = (lock_iters * workgroups) - result;
         float test_percent = (float)test_failures / (float)test_total * 100;
 
+        #ifndef __ANDROID__
         if (test_percent > 10.0)
             log("\u001b[31m");
         else if (test_percent > 5.0)
             log("\u001b[33m");
         else
             log("\u001b[32m");
-        log("%d / %d, %.2f%%\u001b[0m\n", test_failures, test_total, test_percent);
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
         cas_failures += test_failures;
     }
     float cas_failure_percent = (float)cas_failures / (float)total_locks * 100;
@@ -234,8 +245,12 @@ extern "C" char* run() {
     return json_cstring;
 }
 
+extern "C" char* run_default() {
+    return run(8, 2000, 16);
+}
+
 int main() {
-    char* res = run();
+    char* res = run_default();
     log("%s\n", res);
     delete[] res;
     return 0;
