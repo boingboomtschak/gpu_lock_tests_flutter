@@ -1,5 +1,6 @@
 static void lock(global atomic_uint* l) {
     uint e, acq;
+    atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_release, memory_scope_device);
     e = 0;
     acq = 0;
     while (acq == 0) {
