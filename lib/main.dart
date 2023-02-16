@@ -1,15 +1,14 @@
 import 'dart:ffi';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
 import 'package:logcat_monitor/logcat_monitor.dart';
 
 final gpulockLib = DynamicLibrary.open("libgpulock.so");
-final Pointer<Utf8> Function(int, int, int) gpulockRun =
-    gpulockLib.lookupFunction<Pointer<Utf8> Function(Uint32, Uint32, Uint32),
-        Pointer<Utf8> Function(int, int, int)>('run');
+final gpulockRun = gpulockLib.lookupFunction<
+    Pointer<Utf8> Function(Uint32, Uint32, Uint32, Uint32),
+    Pointer<Utf8> Function(int, int, int, int)>('run');
 
 Map<String, dynamic>? report;
 
@@ -43,9 +42,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final StringBuffer _logBuffer = StringBuffer("");
   int _workgroups = 8;
-  int _lockIters = 10000;
+  int _workgroupSize = 32;
+  int _lockIters = 250000;
   int _testIters = 16;
   String _workgroupsField = "";
+  String _workgroupSizeField = "";
   String _lockItersField = "";
   String _testItersField = "";
 
@@ -53,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _workgroupsField = _workgroups.toString();
+    _workgroupSizeField = _workgroupSize.toString();
     _lockItersField = _lockIters.toString();
     _testItersField = _testIters.toString();
     initPlatformState();
@@ -83,12 +85,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void _runTests() {
     clearLog();
     _workgroups = int.parse(_workgroupsField);
+    _workgroupSize = int.parse(_workgroupSizeField);
     _lockIters = int.parse(_lockItersField);
     _testIters = int.parse(_testItersField);
-    final resultPtr = gpulockRun(_workgroups, _lockIters, _testIters);
+    final resultPtr =
+        gpulockRun(_workgroups, _workgroupSize, _lockIters, _testIters);
     final result = resultPtr.toDartString();
     malloc.free(resultPtr);
     report = jsonDecode(result);
+    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+    print(encoder.convert(report));
   }
 
   @override
@@ -107,6 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
               initialValue: _workgroupsField,
               onChanged: (val) {
                 _workgroupsField = val;
+              }),
+          TextFormField(
+              decoration: const InputDecoration(labelText: 'Workgroup Size'),
+              keyboardType: TextInputType.number,
+              initialValue: _workgroupSizeField,
+              onChanged: (val) {
+                _workgroupSizeField = val;
               }),
           TextFormField(
               decoration:
@@ -136,22 +149,12 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Lock failures (TAS): ${report?['tas-failures']}'),
           Text(
               'Lock failure percent (TAS): ${report?['tas-failure-percent']}%'),
-          Text('Lock failures (TAS fenced): ${report?['tas-fenced-failures']}'),
-          Text(
-              'Lock failure percent (TAS fenced): ${report?['tas-fenced-failure-percent']}%'),
           Text('Lock failures (TTAS): ${report?['ttas-failures']}'),
           Text(
               'Lock failure percent (TTAS): ${report?['ttas-failure-percent']}%'),
-          Text(
-              'Lock failures (TTAS fenced): ${report?['ttas-fenced-failures']}'),
-          Text(
-              'Lock failure percent (TTAS fenced): ${report?['ttas-fenced-failure-percent']}%'),
           Text('Lock failures (CAS): ${report?['cas-failures']}'),
           Text(
               'Lock failure percent (CAS): ${report?['cas-failure-percent']}%'),
-          Text('Lock failures (CAS fenced): ${report?['cas-fenced-failures']}'),
-          Text(
-              'Lock failure percent (CAS fenced): ${report?['cas-fenced-failure-percent']}%'),
           Divider(color: Colors.black),
           logboxBuild(context)
         ],
