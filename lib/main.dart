@@ -149,12 +149,27 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Lock failures (TAS): ${report?['tas-failures']}'),
           Text(
               'Lock failure percent (TAS): ${report?['tas-failure-percent']}%'),
+          Text('Test failures (TAS): ${report?['tas-iter-failures']}'),
+          Text(
+              'Test average time (TAS): ${report?['tas-test-avg-time']} seconds'),
+          Text(
+              'Test total time (TAS): ${report?['tas-test-total-time']} seconds'),
           Text('Lock failures (TTAS): ${report?['ttas-failures']}'),
           Text(
               'Lock failure percent (TTAS): ${report?['ttas-failure-percent']}%'),
+          Text('Test failures (TTAS): ${report?['ttas-iter-failures']}'),
+          Text(
+              'Test average time (TTAS): ${report?['ttas-test-avg-time']} seconds'),
+          Text(
+              'Test total time (TTAS): ${report?['ttas-test-total-time']} seconds'),
           Text('Lock failures (CAS): ${report?['cas-failures']}'),
           Text(
               'Lock failure percent (CAS): ${report?['cas-failure-percent']}%'),
+          Text('Test failures (CAS): ${report?['cas-iter-failures']}'),
+          Text(
+              'Test average time (CAS): ${report?['cas-test-avg-time']} seconds'),
+          Text(
+              'Test total time (CAS): ${report?['cas-test-total-time']} seconds'),
           Divider(color: Colors.black),
           logboxBuild(context)
         ],

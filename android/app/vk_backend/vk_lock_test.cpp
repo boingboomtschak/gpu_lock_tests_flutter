@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include <string>
+#include <chrono>
 
 #include "easyvk.h"
 #include "json.h"
@@ -20,6 +21,7 @@ using easyvk::Device;
 using easyvk::Buffer;
 using easyvk::Program;
 using easyvk::vkDeviceType;
+using namespace std::chrono;
 
 const char* os_name() {
     #ifdef _WIN32
@@ -102,19 +104,24 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     tasProgram.setWorkgroupSize(workgroup_size);
     tasProgram.prepare();
 
+    float tas_test_total_time = 0.0;
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
         lockBuf.clear();
         resultBuf.clear();
 
+        auto start = high_resolution_clock::now();
         tasProgram.run();
+        auto stop = high_resolution_clock::now();
+        tas_test_total_time += duration_cast<milliseconds>(stop - start).count();
+
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
         if (test_failures > 0) {
           tas_iter_failures += 1;
         }
-        float test_percent = (float)test_failures / (float)test_total * 100;
+        float test_percent = (float)test_failures / (float)test_total * 100 / 1000.0;
 
         #ifndef __ANDROID__
         if (test_percent > 10.0)
@@ -131,6 +138,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         tas_failures += test_failures;
     }
 
+    float tas_test_avg_time = tas_test_total_time / test_iters;
     float tas_failure_percent = (float)tas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", tas_failures, total_locks, tas_failure_percent);
     log("%d / %d iterations failed \n", tas_iter_failures, test_iters);
@@ -152,12 +160,16 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     ttasProgram.setWorkgroupSize(workgroup_size);
     ttasProgram.prepare();
 
+    float ttas_test_total_time = 0.0;
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
         lockBuf.clear();
         resultBuf.clear();
 
+        auto start = high_resolution_clock::now();
         ttasProgram.run();
+        auto stop = high_resolution_clock::now();
+        ttas_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
@@ -181,6 +193,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         ttas_failures += test_failures;
     }
 
+    float ttas_test_avg_time = ttas_test_total_time / test_iters;
     float ttas_failure_percent = (float)ttas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", ttas_failures, total_locks, ttas_failure_percent);
     log("%d / %d iterations failed \n", ttas_iter_failures, test_iters);
@@ -203,12 +216,16 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     casProgram.setWorkgroupSize(workgroup_size);
     casProgram.prepare();
 
+    float cas_test_total_time = 0.0;
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
         lockBuf.clear();
         resultBuf.clear();
 
+        auto start = high_resolution_clock::now();
         casProgram.run();
+        auto stop = high_resolution_clock::now();
+        cas_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
@@ -233,6 +250,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         cas_failures += test_failures;
     }
 
+    float cas_test_avg_time = cas_test_total_time / test_iters;
     float cas_failure_percent = (float)cas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", cas_failures, total_locks, cas_failure_percent);
     log("%d / %d iterations failed \n", cas_iter_failures, test_iters);
@@ -262,10 +280,19 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         {"total-locks", total_locks},
         {"tas-failures", tas_failures},
         {"tas-failure-percent", tas_failure_percent},
+        {"tas-iter-failures", tas_iter_failures},
+        {"tas-test-avg-time", tas_test_avg_time},
+        {"tas-test-total-time", tas_test_total_time},
         {"ttas-failures", ttas_failures},
         {"ttas-failure-percent", ttas_failure_percent},
+        {"ttas-iter-failures", ttas_iter_failures},
+        {"ttas-test-avg-time", ttas_test_avg_time},
+        {"ttas-test-total-time", ttas_test_total_time},
         {"cas-failures", cas_failures},
-        {"cas-failure-percent", cas_failure_percent}
+        {"cas-failure-percent", cas_failure_percent},
+        {"cas-iter-failures", cas_iter_failures},
+        {"cas-test-avg-time", cas_test_avg_time},
+        {"cas-test-total-time", cas_test_total_time}
     };
 
     string json_string = result_json.dump();
