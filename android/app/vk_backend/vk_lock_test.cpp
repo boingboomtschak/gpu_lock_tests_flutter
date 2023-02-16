@@ -80,11 +80,15 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     Buffer lockBuf = Buffer(device, 1);
     Buffer resultBuf = Buffer(device, 1);
     Buffer lockItersBuf = Buffer(device, 1);
-    Buffer garbageBuf = Buffer(device, workgroup_size * 4);
+    Buffer garbageBuf = Buffer(device, workgroups * workgroup_size);
     vector<Buffer> buffers = { lockBuf, resultBuf, lockItersBuf, garbageBuf };
     lockItersBuf.store(0, lock_iters);
 
     // -------------- TAS LOCK --------------
+
+    uint32_t tas_failures = 0;
+    uint32_t tas_iter_failures = 0;
+
 
     log("----------------------------------------------------------\n");
     log("Testing TAS lock...\n");
@@ -97,7 +101,6 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     tasProgram.setWorkgroups(workgroups);
     tasProgram.setWorkgroupSize(workgroup_size);
     tasProgram.prepare();
-    uint32_t tas_failures = 0;
 
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
@@ -108,6 +111,9 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          tas_iter_failures += 1;
+        }
         float test_percent = (float)test_failures / (float)test_total * 100;
 
         #ifndef __ANDROID__
@@ -124,11 +130,16 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         #endif
         tas_failures += test_failures;
     }
+
     float tas_failure_percent = (float)tas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", tas_failures, total_locks, tas_failure_percent);
+    log("%d / %d iterations failed \n", tas_iter_failures, test_iters);
 
 
     // -------------- TTAS LOCK --------------
+    uint32_t ttas_failures = 0;
+    uint32_t ttas_iter_failures = 0;
+
 
     log("----------------------------------------------------------\n");
     log("Testing TTAS lock...\n");
@@ -140,7 +151,6 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     ttasProgram.setWorkgroups(workgroups);
     ttasProgram.setWorkgroupSize(workgroup_size);
     ttasProgram.prepare();
-    uint32_t ttas_failures = 0;
 
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
@@ -151,6 +161,9 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          ttas_iter_failures += 1;
+        }
         float test_percent = (float)test_failures / (float)test_total * 100;
 
         #ifndef __ANDROID__
@@ -167,10 +180,17 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         #endif
         ttas_failures += test_failures;
     }
+
     float ttas_failure_percent = (float)ttas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", ttas_failures, total_locks, ttas_failure_percent);
+    log("%d / %d iterations failed \n", ttas_iter_failures, test_iters);
+
 
     // -------------- CAS LOCK --------------
+
+    uint32_t cas_failures = 0;
+    uint32_t cas_iter_failures = 0;
+
 
     log("----------------------------------------------------------\n");
     log("Testing CAS lock...\n");
@@ -182,7 +202,6 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     casProgram.setWorkgroups(workgroups);
     casProgram.setWorkgroupSize(workgroup_size);
     casProgram.prepare();
-    uint32_t cas_failures = 0;
 
     for (int i = 1; i <= test_iters; i++) {
         log("  Test %d: ", i);
@@ -193,6 +212,10 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
         uint32_t result = resultBuf.load(0);
         uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          cas_iter_failures += 1;
+        }
+
         float test_percent = (float)test_failures / (float)test_total * 100;
 
         #ifndef __ANDROID__
@@ -209,8 +232,10 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         #endif
         cas_failures += test_failures;
     }
+
     float cas_failure_percent = (float)cas_failures / (float)total_locks * 100;
     log("%d / %d failures, about %.2f%%\n", cas_failures, total_locks, cas_failure_percent);
+    log("%d / %d iterations failed \n", cas_iter_failures, test_iters);
 
     log("----------------------------------------------------------\n");
     log("Cleaning up...\n");

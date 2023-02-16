@@ -11,14 +11,15 @@ static void unlock(global atomic_uint* l) {
 }
 
 kernel void lock_test(global atomic_uint* l, global uint* res, global uint* iters, global uint* garbage) {
-    if (get_local_id(0) != 0) {
-        for (uint j = 0; j < *iters; j++) {
-            uint i = get_local_id(0) * 4;
-            uint x = garbage[i];
-            x += get_local_id(0);
-            garbage[i] = x;
-        }
-    } else {
+//    if (get_local_id(0) != 0) {
+//        for (uint j = 0; j < *iters; j++) {
+//            uint i = get_group_id(0) * get_local_id(0);
+//            uint x = garbage[i];
+//            x += get_local_id(0);
+//            garbage[i] = x;
+//        }
+//    } else {
+      if (get_local_id(0) == 0) {
         for (uint i = 0; i < *iters; i++) {
             lock(l);
 

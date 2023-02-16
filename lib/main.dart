@@ -41,10 +41,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final StringBuffer _logBuffer = StringBuffer("");
-  int _workgroups = 8;
-  int _workgroupSize = 32;
-  int _lockIters = 250000;
-  int _testIters = 16;
+  int _workgroups = 19;
+  int _workgroupSize = 128;
+  int _lockIters = 10000;
+  int _testIters = 1000;
   String _workgroupsField = "";
   String _workgroupSizeField = "";
   String _lockItersField = "";
