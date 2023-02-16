@@ -113,7 +113,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         auto start = high_resolution_clock::now();
         tasProgram.run();
         auto stop = high_resolution_clock::now();
-        tas_test_total_time += duration_cast<milliseconds>(stop - start).count();
+        tas_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
 
 
         uint32_t result = resultBuf.load(0);
@@ -121,7 +121,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         if (test_failures > 0) {
           tas_iter_failures += 1;
         }
-        float test_percent = (float)test_failures / (float)test_total * 100 / 1000.0;
+        float test_percent = (float)test_failures / (float)test_total * 100;
 
         #ifndef __ANDROID__
         if (test_percent > 10.0)
