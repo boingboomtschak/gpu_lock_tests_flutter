@@ -146,30 +146,64 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Lock attempts per thread: ${report?['lock-iters']}'),
           Text('Number of tests per lock: ${report?['test-iters']}'),
           Text('Total lock attempts per lock: ${report?['total-locks']}'),
-          Text('Lock failures (TAS): ${report?['tas-failures']}'),
+          Text('Lock failures (TAS fenced): ${report?['tas-failures-fenced']}'),
           Text(
-              'Lock failure percent (TAS): ${report?['tas-failure-percent']}%'),
-          Text('Test failures (TAS): ${report?['tas-iter-failures']}'),
+              'Lock failure percent (TAS fenced): ${report?['tas-failure-percent-fenced']}%'),
           Text(
-              'Test average time (TAS): ${report?['tas-test-avg-time']} seconds'),
+              'Test failures (TAS fenced): ${report?['tas-iter-failures-fenced']}'),
+//          Text(
+//              'Test average time (TAS fenced): ${report?['tas-test-avg-time-fenced']} seconds'),
+//          Text(
+//              'Test total time (TAS fenced): ${report?['tas-test-total-time-fenced']} seconds'),
           Text(
-              'Test total time (TAS): ${report?['tas-test-total-time']} seconds'),
-          Text('Lock failures (TTAS): ${report?['ttas-failures']}'),
+              'Lock failures (TAS unfenced): ${report?['tas-failures-unfenced']}'),
           Text(
-              'Lock failure percent (TTAS): ${report?['ttas-failure-percent']}%'),
-          Text('Test failures (TTAS): ${report?['ttas-iter-failures']}'),
+              'Lock failure percent (TAS unfenced): ${report?['tas-failure-percent-unfenced']}%'),
           Text(
-              'Test average time (TTAS): ${report?['ttas-test-avg-time']} seconds'),
+              'Test failures (TAS unfenced): ${report?['tas-iter-failures-unfenced']}'),
+//          Text(
+//              'Test average time (TAS unfenced): ${report?['tas-test-avg-time-unfenced']} seconds'),
+//          Text(
+//              'Test total time (TAS unfenced): ${report?['tas-test-total-time-unfenced']} seconds'),
           Text(
-              'Test total time (TTAS): ${report?['ttas-test-total-time']} seconds'),
-          Text('Lock failures (CAS): ${report?['cas-failures']}'),
+              'Lock failures (TTAS fenced): ${report?['ttas-failures-fenced']}'),
           Text(
-              'Lock failure percent (CAS): ${report?['cas-failure-percent']}%'),
-          Text('Test failures (CAS): ${report?['cas-iter-failures']}'),
+              'Lock failure percent (TTAS fenced): ${report?['ttas-failure-percent-fenced']}%'),
           Text(
-              'Test average time (CAS): ${report?['cas-test-avg-time']} seconds'),
+              'Test failures (TTAS fenced): ${report?['ttas-iter-failures-fenced']}'),
+//          Text(
+//              'Test average time (TTAS fenced): ${report?['ttas-test-avg-time-fenced']} seconds'),
+//          Text(
+//              'Test total time (TTAS fenced): ${report?['ttas-test-total-time-fenced']} seconds'),
           Text(
-              'Test total time (CAS): ${report?['cas-test-total-time']} seconds'),
+              'Lock failures (TTAS unfenced): ${report?['ttas-failures-unfenced']}'),
+          Text(
+              'Lock failure percent (TTAS unfenced): ${report?['ttas-failure-percent-unfenced']}%'),
+          Text(
+              'Test failures (TTAS unfenced): ${report?['ttas-iter-failures-unfenced']}'),
+//          Text(
+//              'Test average time (TTAS unfenced): ${report?['ttas-test-avg-time-unfenced']} seconds'),
+//          Text(
+//              'Test total time (TTAS unfenced): ${report?['ttas-test-total-time-unfenced']} seconds'),
+          Text('Lock failures (CAS fenced): ${report?['cas-failures-fenced']}'),
+          Text(
+              'Lock failure percent (CAS fenced): ${report?['cas-failure-percent-fenced']}%'),
+          Text(
+              'Test failures (CAS fenced): ${report?['cas-iter-failures-fenced']}'),
+          //         Text(
+          //             'Test average time (CAS fenced): ${report?['cas-test-avg-time-fenced']} seconds'),
+          //         Text(
+          //             'Test total time (CAS fenced): ${report?['cas-test-total-time-fenced']} seconds'),
+          Text(
+              'Lock failures (CAS unfenced): ${report?['cas-failures-unfenced']}'),
+          Text(
+              'Lock failure percent (CAS unfenced): ${report?['cas-failure-percent-unfenced']}%'),
+          Text(
+              'Test failures (CAS unfenced): ${report?['cas-iter-failures-unfenced']}'),
+//          Text(
+//              'Test average time (CAS unfenced): ${report?['cas-test-avg-time-unfenced']} seconds'),
+//          Text(
+//              'Test total time (CAS unfenced): ${report?['cas-test-total-time-unfenced']} seconds'),
           Divider(color: Colors.black),
           logboxBuild(context)
         ],

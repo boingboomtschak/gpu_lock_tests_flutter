@@ -2,7 +2,7 @@ CXXFLAGS = -std=c++17
 
 all: vk_lock_test
 
-vk_lock_test: vk_lock_test.cpp easyvk.o tas_lock.cinit ttas_lock.cinit cas_lock.cinit
+vk_lock_test: vk_lock_test.cpp easyvk.o tas_lock.cinit ttas_lock.cinit cas_lock.cinit tas_lock_unfenced.cinit ttas_lock_unfenced.cinit cas_lock_unfenced.cinit
 	$(CXX) $(CXXFLAGS) easyvk.o vk_lock_test.cpp -lvulkan -o vk_lock_test.run
 
 easyvk.o: easyvk.cpp easyvk.h

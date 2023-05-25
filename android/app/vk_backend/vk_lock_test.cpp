@@ -93,7 +93,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
 
     log("----------------------------------------------------------\n");
-    log("Testing TAS lock...\n");
+    log("Testing TAS lock (fenced)...\n");
     log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
     vector<uint32_t> tasSpvCode =
     #include "tas_lock.cinit"
@@ -143,6 +143,61 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     log("%d / %d failures, about %.2f%%\n", tas_failures, total_locks, tas_failure_percent);
     log("%d / %d iterations failed \n", tas_iter_failures, test_iters);
 
+    uint32_t tas_unfenced_failures = 0;
+    uint32_t tas_unfenced_iter_failures = 0;
+
+
+    log("----------------------------------------------------------\n");
+    log("Testing TAS lock (unfenced)...\n");
+    log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
+    vector<uint32_t> tasUnfencedSpvCode =
+    #include "tas_lock_unfenced.cinit"
+    ;
+
+    Program tasUnfencedProgram = Program(device, tasUnfencedSpvCode, buffers);
+    tasUnfencedProgram.setWorkgroups(workgroups);
+    tasUnfencedProgram.setWorkgroupSize(workgroup_size);
+    tasUnfencedProgram.prepare();
+
+    float tas_unfenced_test_total_time = 0.0;
+    for (int i = 1; i <= test_iters; i++) {
+        log("  Test %d: ", i);
+        lockBuf.clear();
+        resultBuf.clear();
+
+        auto start = high_resolution_clock::now();
+        tasUnfencedProgram.run();
+        auto stop = high_resolution_clock::now();
+        tas_unfenced_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
+
+
+        uint32_t result = resultBuf.load(0);
+        uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          tas_unfenced_iter_failures += 1;
+        }
+        float test_percent = (float)test_failures / (float)test_total * 100;
+
+        #ifndef __ANDROID__
+        if (test_percent > 10.0)
+            log("\u001b[31m");
+        else if (test_percent > 5.0)
+            log("\u001b[33m");
+        else
+            log("\u001b[32m");
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
+        tas_unfenced_failures += test_failures;
+    }
+
+    float tas_unfenced_test_avg_time = tas_test_total_time / test_iters;
+    float tas_unfenced_failure_percent = (float)tas_unfenced_failures / (float)total_locks * 100;
+    log("%d / %d failures, about %.2f%%\n", tas_unfenced_failures, total_locks, tas_unfenced_failure_percent);
+    log("%d / %d iterations failed \n", tas_unfenced_iter_failures, test_iters);
+
 
     // -------------- TTAS LOCK --------------
     uint32_t ttas_failures = 0;
@@ -150,7 +205,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
 
     log("----------------------------------------------------------\n");
-    log("Testing TTAS lock...\n");
+    log("Testing TTAS lock (fenced)...\n");
     log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
     vector<uint32_t> ttasSpvCode =
     #include "ttas_lock.cinit"
@@ -198,6 +253,59 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     log("%d / %d failures, about %.2f%%\n", ttas_failures, total_locks, ttas_failure_percent);
     log("%d / %d iterations failed \n", ttas_iter_failures, test_iters);
 
+    // -------------- TTAS LOCK --------------
+    uint32_t ttas_unfenced_failures = 0;
+    uint32_t ttas_unfenced_iter_failures = 0;
+
+
+    log("----------------------------------------------------------\n");
+    log("Testing TTAS lock (unfenced)...\n");
+    log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
+    vector<uint32_t> ttasUnfencedSpvCode =
+    #include "ttas_lock_unfenced.cinit"
+    ;
+    Program ttasUnfencedProgram = Program(device, ttasUnfencedSpvCode, buffers);
+    ttasUnfencedProgram.setWorkgroups(workgroups);
+    ttasUnfencedProgram.setWorkgroupSize(workgroup_size);
+    ttasUnfencedProgram.prepare();
+
+    float ttas_unfenced_test_total_time = 0.0;
+    for (int i = 1; i <= test_iters; i++) {
+        log("  Test %d: ", i);
+        lockBuf.clear();
+        resultBuf.clear();
+
+        auto start = high_resolution_clock::now();
+        ttasUnfencedProgram.run();
+        auto stop = high_resolution_clock::now();
+        ttas_unfenced_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
+
+        uint32_t result = resultBuf.load(0);
+        uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          ttas_unfenced_iter_failures += 1;
+        }
+        float test_percent = (float)test_failures / (float)test_total * 100;
+
+        #ifndef __ANDROID__
+        if (test_percent > 10.0)
+            log("\u001b[31m");
+        else if (test_percent > 5.0)
+            log("\u001b[33m");
+        else
+            log("\u001b[32m");
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
+        ttas_unfenced_failures += test_failures;
+    }
+
+    float ttas_unfenced_test_avg_time = ttas_unfenced_test_total_time / test_iters;
+    float ttas_unfenced_failure_percent = (float)ttas_unfenced_failures / (float)total_locks * 100;
+    log("%d / %d failures, about %.2f%%\n", ttas_unfenced_failures, total_locks, ttas_unfenced_failure_percent);
+    log("%d / %d iterations failed \n", ttas_unfenced_iter_failures, test_iters);
 
     // -------------- CAS LOCK --------------
 
@@ -206,7 +314,7 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
 
 
     log("----------------------------------------------------------\n");
-    log("Testing CAS lock...\n");
+    log("Testing CAS lock (fenced)...\n");
     log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
     vector<uint32_t> casSpvCode =
     #include "cas_lock.cinit"
@@ -255,12 +363,73 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
     log("%d / %d failures, about %.2f%%\n", cas_failures, total_locks, cas_failure_percent);
     log("%d / %d iterations failed \n", cas_iter_failures, test_iters);
 
+    // -------------- CAS LOCK --------------
+
+    uint32_t cas_unfenced_failures = 0;
+    uint32_t cas_unfenced_iter_failures = 0;
+
+
+    log("----------------------------------------------------------\n");
+    log("Testing CAS lock (unfenced)...\n");
+    log("%d workgroups, %d threads per workgroup, %d locks per thread, tests run %d times.\n", workgroups, workgroup_size, lock_iters, test_iters);
+    vector<uint32_t> casUnfencedSpvCode =
+    #include "cas_lock_unfenced.cinit"
+    ;
+    Program casUnfencedProgram = Program(device, casUnfencedSpvCode, buffers);
+    casUnfencedProgram.setWorkgroups(workgroups);
+    casUnfencedProgram.setWorkgroupSize(workgroup_size);
+    casUnfencedProgram.prepare();
+
+    float cas_unfenced_test_total_time = 0.0;
+    for (int i = 1; i <= test_iters; i++) {
+        log("  Test %d: ", i);
+        lockBuf.clear();
+        resultBuf.clear();
+
+        auto start = high_resolution_clock::now();
+        casUnfencedProgram.run();
+        auto stop = high_resolution_clock::now();
+        cas_unfenced_test_total_time += duration_cast<milliseconds>(stop - start).count() / 1000.0;
+
+        uint32_t result = resultBuf.load(0);
+        uint32_t test_failures = (lock_iters * workgroups) - result;
+        if (test_failures > 0) {
+          cas_unfenced_iter_failures += 1;
+        }
+
+        float test_percent = (float)test_failures / (float)test_total * 100;
+
+        #ifndef __ANDROID__
+        if (test_percent > 10.0)
+            log("\u001b[31m");
+        else if (test_percent > 5.0)
+            log("\u001b[33m");
+        else
+            log("\u001b[32m");
+        #endif
+        log("%d / %d, %.2f%%\n", test_failures, test_total, test_percent);
+        #ifndef __ANDROID__
+        log('\u001b[0m');
+        #endif
+        cas_unfenced_failures += test_failures;
+    }
+
+    float cas_unfenced_test_avg_time = cas_unfenced_test_total_time / test_iters;
+    float cas_unfenced_failure_percent = (float)cas_unfenced_failures / (float)total_locks * 100;
+    log("%d / %d failures, about %.2f%%\n", cas_unfenced_failures, total_locks, cas_unfenced_failure_percent);
+    log("%d / %d iterations failed \n", cas_unfenced_iter_failures, test_iters);
+
+
+
     log("----------------------------------------------------------\n");
     log("Cleaning up...\n");
 
     tasProgram.teardown();
     ttasProgram.teardown();
     casProgram.teardown();
+    tasUnfencedProgram.teardown();
+    ttasUnfencedProgram.teardown();
+    casUnfencedProgram.teardown();
 
     lockItersBuf.teardown();
     resultBuf.teardown();
@@ -278,21 +447,37 @@ extern "C" char* run(uint32_t workgroups, uint32_t workgroup_size, uint32_t lock
         {"lock-iters", lock_iters},
         {"test-iters", test_iters},
         {"total-locks", total_locks},
-        {"tas-failures", tas_failures},
-        {"tas-failure-percent", tas_failure_percent},
-        {"tas-iter-failures", tas_iter_failures},
-        {"tas-test-avg-time", tas_test_avg_time},
-        {"tas-test-total-time", tas_test_total_time},
-        {"ttas-failures", ttas_failures},
-        {"ttas-failure-percent", ttas_failure_percent},
-        {"ttas-iter-failures", ttas_iter_failures},
-        {"ttas-test-avg-time", ttas_test_avg_time},
-        {"ttas-test-total-time", ttas_test_total_time},
-        {"cas-failures", cas_failures},
-        {"cas-failure-percent", cas_failure_percent},
-        {"cas-iter-failures", cas_iter_failures},
-        {"cas-test-avg-time", cas_test_avg_time},
-        {"cas-test-total-time", cas_test_total_time}
+        {"tas-failures-fenced", tas_failures},
+        {"tas-failure-percent-fenced", tas_failure_percent},
+        {"tas-iter-failures-fenced", tas_iter_failures},
+        {"tas-test-avg-time-fenced", tas_test_avg_time},
+        {"tas-test-total-time-fenced", tas_test_total_time},
+        {"tas-failures-unfenced", tas_unfenced_failures},
+        {"tas-failure-percent-unfenced", tas_unfenced_failure_percent},
+        {"tas-iter-failures-unfenced", tas_unfenced_iter_failures},
+        {"tas-test-avg-time-unfenced", tas_unfenced_test_avg_time},
+        {"tas-test-total-time-unfenced", tas_unfenced_test_total_time},
+        {"ttas-failures-fenced", ttas_failures},
+        {"ttas-failure-percent-fenced", ttas_failure_percent},
+        {"ttas-iter-failures-fenced", ttas_iter_failures},
+        {"ttas-test-avg-time-fenced", ttas_test_avg_time},
+        {"ttas-test-total-time-fenced", ttas_test_total_time},
+        {"ttas-failures-unfenced", ttas_unfenced_failures},
+        {"ttas-failure-percent-unfenced", ttas_unfenced_failure_percent},
+        {"ttas-iter-failures-unfenced", ttas_unfenced_iter_failures},
+        {"ttas-test-avg-time-unfenced", ttas_unfenced_test_avg_time},
+        {"ttas-test-total-time-unfenced", ttas_unfenced_test_total_time},
+        {"cas-failures-fenced", cas_failures},
+        {"cas-failure-percent-fenced", cas_failure_percent},
+        {"cas-iter-failures-fenced", cas_iter_failures},
+        {"cas-test-avg-time-fenced", cas_test_avg_time},
+        {"cas-test-total-time-fenced", cas_test_total_time},
+        {"cas-failures-unfenced", cas_unfenced_failures},
+        {"cas-failure-percent-unfenced", cas_unfenced_failure_percent},
+        {"cas-iter-failures-unfenced", cas_unfenced_iter_failures},
+        {"cas-test-avg-time-unfenced", cas_unfenced_test_avg_time},
+        {"cas-test-total-time-unfenced", cas_unfenced_test_total_time}
+
     };
 
     string json_string = result_json.dump();
